@@ -2,9 +2,9 @@
 id: 010
 title: "Spec: picker plugin brief (install/selection UX)"
 labels: [wayfinder:prototype]
-status: open
-assignee: null
-blocked_by: [006]
+status: closed
+assignee: Luis Vinicius <luisvinicius0906@gmail.com>
+blocked_by: [006, 007]
 ---
 
 ## Question
@@ -26,3 +26,15 @@ react to first.
 - Acceptance criteria.
 
 Output: a rough prototype linked as an asset + a self-contained brief ready to hand to build.
+
+## Resolution
+
+Prototype built ([../prototypes/010-picker-mock.sh](../prototypes/010-picker-mock.sh) — throwaway, runnable, prints
+commands only, no herdr needed) and reacted to; brief written from it:
+[../assets/010-picker-brief.md](../assets/010-picker-brief.md).
+
+**`herdr-mihi.picker`** (Rust TUI) — the collection's trust-visible front door: a **popup** listing the catalog with
+installed/available/update states, **multi-select install/update/uninstall**, and a **confirm screen showing the EXACT
+`herdr plugin install … --ref <plugin>-latest` commands + the resolved commit SHA** before anything runs. Installs
+**only** from the pinned `luisvinicius09/herdr-mihi`; network only to it. User approved: layout, confirm-as-trust-anchor
+(+ resolved SHA), install/update/uninstall scope, and popup placement (promotable to a tab).

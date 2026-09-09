@@ -3,6 +3,13 @@
 **Ticket:** 003 · **Type:** research · **Source:** [`Crokily/herdr-lazygit`](https://github.com/Crokily/herdr-lazygit) @ `main` (v0.3.0, MIT).
 Read files: `herdr-plugin.toml`, `README.md`, `DESIGN.md`, `scripts/{open-lazygit,open-lazygit-tab,run-lazygit,runtime-env,install-runtime}.sh`, `CHANGELOG.md`, `lazygit-config.yml`.
 
+## Scope of "done better"
+
+We are **not** rebuilding lazygit — lazygit stays the stock external binary and owns all git UI (staging,
+diff, history, commit, sync). Our plugin is the thin **herdr↔lazygit glue**: the manifest, the
+action/pane, worktree-scoped launch/toggle, keybinding registration, config plumbing, and missing-binary
+handling. "Done better" = *that integration layer* is cleaner and lighter than `Crokily/herdr-lazygit`'s.
+
 ## Bottom line
 
 This is **not a rough plugin to trivially beat** — it's a ~3,500-line, two-language (bash + python3),

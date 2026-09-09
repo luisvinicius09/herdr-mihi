@@ -2,8 +2,8 @@
 id: 007
 title: "Decide: language & build/distribution conventions"
 labels: [wayfinder:grilling]
-status: open
-assignee: null
+status: closed
+assignee: Luis Vinicius <luisvinicius0906@gmail.com>
 blocked_by: [005]
 ---
 
@@ -29,3 +29,15 @@ Distribution backbone = release CI that `git subtree split`s each changed plugin
 This ticket decides how **compiled (go/rust) plugins** are built within that: build-on-install (herdr runs the
 manifest's build step on the user's machine) vs **prebuilt per-OS binaries** attached to the tag / committed into the
 split ref (cf. `herdr-plus` and `herdr-auto-title`, which both ship goreleaser binaries). Must work for macOS + Linux.
+
+## Resolution
+
+Decided: **bash for thin glue; Rust the default compiled language** (Go allowed per-plugin when justified);
+**prebuilt per-OS binaries** — the ecosystem norm. `[[build]] = ["bash","herdr/install.sh"]` downloads
+`<plugin>-<os>-<arch>` from the plugin's GitHub release (matrix: darwin arm64/amd64 + linux amd64/arm64) and falls
+back to source only if the download fails and a toolchain exists. **No build-on-install as the primary path.** Full
+spec (install.sh + release.yml + uniform asset naming):
+[../assets/007-language-build-distribution.md](../assets/007-language-build-distribution.md).
+
+Evidence: herdr aborts installs on build failure and won't install toolchains (docs); every popular compiled plugin
+ships prebuilt binaries (reviewr 629★, file-viewer, herdr-plus, herdr-nvim). **Unblocks tickets 008/009/010.**

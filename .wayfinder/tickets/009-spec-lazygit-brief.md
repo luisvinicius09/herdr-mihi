@@ -2,9 +2,9 @@
 id: 009
 title: "Spec: lazygit plugin brief (done better)"
 labels: [wayfinder:grilling]
-status: open
-assignee: null
-blocked_by: [003, 006]
+status: closed
+assignee: Luis Vinicius <luisvinicius0906@gmail.com>
+blocked_by: [003, 006, 007]
 ---
 
 ## Question
@@ -22,3 +22,13 @@ the conventions (ticket 006):
 - Acceptance criteria — what "done" looks like.
 
 Output: a self-contained brief (as a linked asset) ready to hand to a build phase.
+
+## Resolution
+
+Brief written: **`herdr-mihi.lazygit`** — thin, **pure-bash** herdr↔lazygit glue. A single `open` action toggles a
+**popup** running the user's **own** lazygit (on `PATH`) with their **own config untouched**, worktree-scoped
+(`flock`-guarded, readable-error-on-failure). Trust cuts vs the reference: no python3, no bundled/downloaded binaries,
+no network, and **AI-commit removed** (staged-diff exfiltration). Dropped the `open-tab` action (the user promotes the
+popup to a tab manually) and all config layering (nothing to inject once the extra verbs are cut). Capability
+declaration: spawns lazygit/git/herdr, `network: none`. Full brief:
+[../assets/009-lazygit-brief.md](../assets/009-lazygit-brief.md).

@@ -2,8 +2,8 @@
 id: 006
 title: "Decide: repo structure & shared plugin conventions"
 labels: [wayfinder:grilling]
-status: open
-assignee: null
+status: closed
+assignee: Luis Vinicius <luisvinicius0906@gmail.com>
 blocked_by: [005, 004]
 ---
 
@@ -33,3 +33,18 @@ Topology = dev monorepo + per-plugin release refs + a picker plugin (see
 - The **versioning scheme** behind the `<name>-vX.Y.Z` tags and the `<name>-latest` pointer.
 - A `plugins/<name>/` layout + shared tooling that is **subtree-split-friendly** (each plugin dir self-contained so
   its split ref is installable on its own).
+
+## Resolution
+
+Decided: **shared code = ① canonical `/shared` synced into each plugin** (fix-once, CI drift-check), and
+**config/state = herdr-native** (`$HERDR_PLUGIN_CONFIG_DIR/.env` + `$HERDR_PLUGIN_STATE_DIR`). All other conventions
+ratified from ticket 004. Full spec + new-plugin checklist:
+[../assets/006-structure-and-conventions.md](../assets/006-structure-and-conventions.md).
+
+Highlights: layout `plugins/<name>/` + canonical `/shared`; ids `herdr-mihi.<plugin>`; wrapper-shim manifests
+(absolute via `$HERDR_PLUGIN_ROOT`, never cwd-relative); one-artifact argv dispatch; exit-0-when-not-applicable +
+defensive JSON parsing; mandatory "Platforms: macOS · Linux" README line; `catalog.json` generated from manifests;
+per-plugin semver → `<plugin>-vX.Y.Z`/`-latest`; `justfile` CI.
+
+Handed to ticket 007: `/shared/install.sh` contents, `release.yml` matrix, language heuristic. **Re-wired tickets
+008/009/010 to also block on 007** (a brief needs the language/build convention before it can name a plugin's language).
