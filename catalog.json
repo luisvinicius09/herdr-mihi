@@ -1,0 +1,6 @@
+{
+  "owner": "luisvinicius09/herdr-mihi",
+  "plugins": [
+    { "id": "herdr-mihi.lazygit", "name": "lazygit", "version": "0.1.0", "latest_ref": "lazygit-latest", "latest_commit": null, "description": "A git popup running your own lazygit, scoped to the current worktree." }
+  ]
+}

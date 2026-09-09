@@ -1,0 +1,9 @@
+# built artifacts — produced at install/release, never committed
+bin/
+target/
+
+# secrets — never committed (each plugin ships .env.example instead)
+.env
+
+# os cruft
+.DS_Store

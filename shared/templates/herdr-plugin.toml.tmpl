@@ -1,0 +1,24 @@
+# herdr-mihi plugin manifest. Fill the __PLACEHOLDERS__. Compiled plugins keep [[build]];
+# bash plugins delete it. The manifest only ever names herdr/run.sh (the shared wrapper).
+id = "herdr-mihi.__NAME__"
+name = "__NAME__"
+version = "0.1.0"
+min_herdr_version = "0.8.0"
+description = "__ONE-LINE PURPOSE__"
+platforms = ["macos", "linux"]
+
+# Compiled (rust/go) plugins only — DELETE for bash plugins:
+# [[build]]
+# command = ["bash", "herdr/install.sh"]
+
+[[actions]]
+id = "open"
+title = "__Title__"
+command = ["sh", "-c", "exec bash \"$HERDR_PLUGIN_ROOT/herdr/run.sh\" open"]
+
+# Uncomment if the plugin opens a pane:
+# [[panes]]
+# id = "__NAME__"
+# title = "__Title__"
+# placement = "popup"   # overlay | popup | split | tab | zoomed
+# command = ["sh", "-c", "exec bash \"$HERDR_PLUGIN_ROOT/herdr/run.sh\" pane"]
