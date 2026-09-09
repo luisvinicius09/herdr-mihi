@@ -2,8 +2,8 @@
 id: 011
 title: "Decide: how to test & develop plugins against herdr"
 labels: [wayfinder:research]
-status: open
-assignee: null
+status: closed
+assignee: Luis Vinicius <luisvinicius0906@gmail.com>
 blocked_by: [008, 009, 010]
 ---
 
@@ -30,3 +30,17 @@ covering all three phase-1 plugin shapes (daemon/poller, action+popup, installer
   checklist a human/agent follows.
 
 Output: a `TESTING.md` convention + per-plugin-shape test recipes, as a linked asset.
+
+## Resolution
+
+Wrote the testing convention: [../assets/011-testing-and-dev-loop.md](../assets/011-testing-and-dev-loop.md).
+**Four tiers**, cheapest-first: (0) **dev loop** — `herdr plugin link` (offline, no build) → `action invoke` /
+`pane open` → `herdr plugin log list`; (1) **unit** — golden herdr-JSON fixtures (herdr ships them) + hermetic
+env-redirected config/state; (2) **mock** — a fake socket (proven by auto-title's `herdrtest/stub.go`) or a fake
+`herdr` on `PATH`; (3) **integration** against a **real headless herdr** (`src/server/headless.rs`; herdr's own
+`tests/cli/plugins.rs` spawns a server and drives it via CLI) — runnable **in CI** since herdr is installable;
+(4) **trust assertions as CI gates** (cargo-deny bans net crates, no-subprocess grep, no non-pinned URL).
+
+Two corrections to earlier assumptions: herdr **does** have a headless mode, so integration runs in CI (not just
+locally); and the mock-socket approach is **proven, not speculative**. Per-shape recipes for daemon/popup/installer
+included. **This was the last open ticket — the phase-1 spec is complete.**
