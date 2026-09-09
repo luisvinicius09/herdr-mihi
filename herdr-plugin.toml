@@ -1,0 +1,19 @@
+id = "herdr-mihi.auto-title"
+name = "auto-title"
+version = "0.1.0"
+min_herdr_version = "0.8.0"
+description = "Tab titles that follow the work in each tab — deterministic, no network, no LLM."
+platforms = ["macos", "linux"]
+
+[[build]]
+command = ["bash", "herdr/install.sh"]
+
+# Long-lived daemon: herdr starts it once; it polls session.snapshot and renames drifted tabs.
+[[startup]]
+command = ["sh", "-c", "exec bash \"$HERDR_PLUGIN_ROOT/herdr/run.sh\""]
+
+# User action: hand a manually-renamed tab back to auto-title (re-adopt + resume naming it).
+[[actions]]
+id = "reset"
+title = "Auto-title: reset this tab"
+command = ["sh", "-c", "exec bash \"$HERDR_PLUGIN_ROOT/herdr/run.sh\" reset"]
