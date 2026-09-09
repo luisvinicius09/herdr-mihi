@@ -26,3 +26,9 @@ out="catalog.json"; tmp="$(mktemp)"
 } > "$tmp"
 mv "$tmp" "$out"
 echo "wrote $out"
+
+# Bundle a copy into the picker so a released picker ref carries the catalog.
+if [ -d plugins/picker ]; then
+  cp "$out" plugins/picker/catalog.json
+  echo "bundled -> plugins/picker/catalog.json"
+fi

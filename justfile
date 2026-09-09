@@ -49,6 +49,10 @@ new-plugin name:
 catalog:
     bash scripts/gen-catalog.sh
 
+# Publish a plugin as a release ref (dry run; add --push to publish): just release lazygit
+release name *flags:
+    bash scripts/release.sh {{name}} {{flags}}
+
 # Everything CI runs (no herdr needed): sync check + per-plugin lint/test + bash tests.
 ci: check-sync
     #!/usr/bin/env bash
