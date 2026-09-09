@@ -9,17 +9,14 @@ exact commands before it runs anything.** The collection's trust-visible front d
 ```sh
 herdr plugin install luisvinicius09/herdr-mihi --ref picker-latest
 ```
-Then open it (bind a key, below) and install the rest.
 
-## Keybinding
-herdr binds no keys by default. Add to your herdr `config.toml`, then `herdr server reload-config`:
-```toml
-[[keys.command]]
-key = "prefix p"
-type = "plugin_action"
-action = "herdr-mihi.picker.open"
+## Open it
+The picker is an occasional-use tool, so it ships **no keybind** — just invoke the action when you want it:
+```sh
+herdr plugin action invoke herdr-mihi.picker.open
 ```
-Over `--remote`, bindings need `--remote-keybindings server`.
+(If you do want a key, add a `[[keys.command]]` to your `config.toml` that runs that command, then
+`herdr server reload-config`.)
 
 ## Behavior
 - Opens a **popup** listing the catalog with each plugin's state: `o available`, `* installed vX`, or
@@ -36,6 +33,7 @@ Over `--remote`, bindings need `--remote-keybindings server`.
 - **Network:** only what `herdr plugin install` fetches from the **pinned** `luisvinicius09/herdr-mihi`.
   Never an arbitrary owner/repo/URL.
 - **Files:** reads `catalog.json` (bundled, or the repo root in dev) and `$HERDR_PLUGIN_CONFIG_DIR/.env`.
+  Writes nothing.
 - **No** AI/LLM, **no** telemetry. It shows every command before running it.
 
 ## Requirements

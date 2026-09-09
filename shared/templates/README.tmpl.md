@@ -19,9 +19,8 @@ cp .env.example "$(herdr plugin config-dir herdr-mihi.__NAME__)/.env"
 herdr binds no keys by default. Add to your herdr `config.toml`, then `herdr server reload-config`:
 ```toml
 [[keys.command]]
-key = "prefix g"
-type = "plugin_action"
-action = "herdr-mihi.__NAME__.open"
+key = "prefix+g"
+command = "herdr plugin action invoke herdr-mihi.__NAME__.open"
 ```
 Over `--remote`, bindings need `--remote-keybindings server` or they silently no-op.
 

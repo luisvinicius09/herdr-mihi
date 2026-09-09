@@ -33,10 +33,22 @@ struct Icons {
 }
 fn icons(mode: &str) -> Icons {
     match mode {
-        "unicode" => Icons { available: "○", installed: "●", update: "⬆" },
-        "ascii" => Icons { available: "o", installed: "*", update: "^" },
+        "unicode" => Icons {
+            available: "○",
+            installed: "●",
+            update: "⬆",
+        },
+        "ascii" => Icons {
+            available: "o",
+            installed: "*",
+            update: "^",
+        },
         // nerd (default): Font Awesome glyphs present in any Nerd Font
-        _ => Icons { available: "\u{f019}", installed: "\u{f00c}", update: "\u{f0aa}" },
+        _ => Icons {
+            available: "\u{f019}",
+            installed: "\u{f00c}",
+            update: "\u{f0aa}",
+        },
     }
 }
 
@@ -130,12 +142,19 @@ fn cmd_open() {
     let h = cfg_get(&cfg, "POPUP_HEIGHT", "85%");
     let _ = Command::new(herdr_bin())
         .args([
-            "plugin", "pane", "open",
-            "--plugin", "herdr-mihi.picker",
-            "--entrypoint", "picker",
-            "--placement", "popup",
-            "--width", &w,
-            "--height", &h,
+            "plugin",
+            "pane",
+            "open",
+            "--plugin",
+            "herdr-mihi.picker",
+            "--entrypoint",
+            "picker",
+            "--placement",
+            "popup",
+            "--width",
+            &w,
+            "--height",
+            &h,
             "--focus",
         ])
         .status();
@@ -160,7 +179,11 @@ fn load_rows() -> Result<(String, Vec<Row>), String> {
         .filter(|p| p.name != "picker") // don't list ourselves
         .map(|p| {
             let state = catalog::state_for(&p.version, installed.get(&p.id).map(String::as_str));
-            Row { p, state, selected: false }
+            Row {
+                p,
+                state,
+                selected: false,
+            }
         })
         .collect();
     Ok((owner, rows))
@@ -289,7 +312,10 @@ fn ui_browse(f: &mut Frame, app: &App) {
                 ListItem::new(Line::from(vec![
                     check,
                     Span::styled(format!("{icon} "), istyle),
-                    Span::styled(format!("{:<12}", r.p.name), Style::new().fg(Color::White).bold()),
+                    Span::styled(
+                        format!("{:<12}", r.p.name),
+                        Style::new().fg(Color::White).bold(),
+                    ),
                     Span::styled(format!("{:<10}", label), istyle),
                     Span::styled(format!("{:<14}", ver), Style::new().fg(DIM)),
                     Span::styled(r.p.description.clone(), Style::new().fg(DIM)),
@@ -306,7 +332,12 @@ fn ui_browse(f: &mut Frame, app: &App) {
                 .title(Span::styled(" plugins ", Style::new().fg(ACCENT).bold())),
         )
         .highlight_symbol("➤ ")
-        .highlight_style(Style::new().bg(SELBG).fg(ACCENT).add_modifier(Modifier::BOLD));
+        .highlight_style(
+            Style::new()
+                .bg(SELBG)
+                .fg(ACCENT)
+                .add_modifier(Modifier::BOLD),
+        );
     let mut st = app.list.clone();
     f.render_stateful_widget(list, body, &mut st);
 
@@ -318,7 +349,10 @@ fn ui_browse(f: &mut Frame, app: &App) {
             Span::styled(app.icons.update, Style::new().fg(YELLOW)),
             Span::styled(" update   ", Style::new().fg(DIM)),
             Span::styled(app.icons.available, Style::new().fg(DIM)),
-            Span::styled(" available   ·   space acts on the row's state", Style::new().fg(DIM)),
+            Span::styled(
+                " available   ·   space acts on the row's state",
+                Style::new().fg(DIM),
+            ),
         ])),
         legend,
     );
@@ -361,7 +395,10 @@ fn ui_confirm(f: &mut Frame, app: &App) {
     }
     lines.push(Line::raw(""));
     lines.push(Line::from(Span::styled(
-        format!("source: {} (pinned) · no network beyond it · nothing runs until you confirm", app.owner),
+        format!(
+            "source: {} (pinned) · no network beyond it · nothing runs until you confirm",
+            app.owner
+        ),
         Style::new().fg(DIM),
     )));
     lines.push(Line::raw(""));

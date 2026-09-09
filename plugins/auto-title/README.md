@@ -36,9 +36,8 @@ cp .env.example "$(herdr plugin config-dir herdr-mihi.auto-title)/.env"
   Or bind it in your herdr `config.toml`:
   ```toml
   [[keys.command]]
-  key = "prefix R"
-  type = "plugin_action"
-  action = "herdr-mihi.auto-title.reset"
+  key = "prefix+R"
+  command = "herdr plugin action invoke herdr-mihi.auto-title.reset"
   ```
 
 ## Capability declaration (trust)
