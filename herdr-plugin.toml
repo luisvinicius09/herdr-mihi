@@ -1,0 +1,19 @@
+id = "herdr-mihi.lazygit"
+name = "lazygit"
+version = "0.1.0"
+min_herdr_version = "0.8.0"
+description = "A git popup running your own lazygit, scoped to the current worktree."
+platforms = ["macos", "linux"]
+
+# Pure bash — no build step, no bundled binaries.
+
+[[actions]]
+id = "open"
+title = "Lazygit"
+command = ["sh", "-c", "exec bash \"$HERDR_PLUGIN_ROOT/herdr/run.sh\" open"]
+
+[[panes]]
+id = "lazygit"
+title = "Git"
+placement = "popup"
+command = ["sh", "-c", "exec bash \"$HERDR_PLUGIN_ROOT/herdr/run.sh\" pane"]
