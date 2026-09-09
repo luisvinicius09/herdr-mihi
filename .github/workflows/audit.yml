@@ -1,0 +1,36 @@
+name: audit
+
+# Dependency trust gate — enforces the promise in README.md:
+#   cargo-deny  → licenses (tight allow-list), advisories, banned/wildcard/git deps, sources
+#   cargo-audit → independent RustSec advisory cross-check
+# Runs when dependencies change AND daily, so a newly-disclosed advisory in a pinned
+# dep is caught without any code change.
+on:
+  push:
+    branches: [main]
+    paths: ['**/Cargo.toml', '**/Cargo.lock', 'deny.toml', '.github/workflows/audit.yml']
+  pull_request:
+    paths: ['**/Cargo.toml', '**/Cargo.lock', 'deny.toml']
+  schedule:
+    - cron: '0 6 * * *' # daily 06:00 UTC
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install cargo-deny + cargo-audit
+        run: |
+          cargo install cargo-deny --locked
+          cargo install cargo-audit --locked
+      - name: Audit each Rust plugin
+        run: |
+          for p in plugins/*/; do
+            [ -f "${p}Cargo.toml" ] || continue
+            echo "== $(basename "$p") =="
+            ( cd "$p" && cargo deny check --config "$GITHUB_WORKSPACE/deny.toml" )
+            ( cd "$p" && cargo audit --deny warnings )
+          done

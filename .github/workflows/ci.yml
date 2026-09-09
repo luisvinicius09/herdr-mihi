@@ -1,0 +1,25 @@
+name: ci
+
+# Reliability gate: lint + test every plugin on both target platforms.
+# All logic lives in scripts/ci.sh, so `just ci` locally == this workflow.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest] # the two platforms the collection targets
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add rustfmt + clippy
+        run: rustup component add rustfmt clippy
+      - name: Lint + test all plugins
+        run: bash scripts/ci.sh

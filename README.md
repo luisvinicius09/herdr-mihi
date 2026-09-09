@@ -2,6 +2,9 @@
 
 **Platforms: macOS · Linux**
 
+[![ci](https://github.com/luisvinicius09/herdr-mihi/actions/workflows/ci.yml/badge.svg)](https://github.com/luisvinicius09/herdr-mihi/actions/workflows/ci.yml)
+[![audit](https://github.com/luisvinicius09/herdr-mihi/actions/workflows/audit.yml/badge.svg)](https://github.com/luisvinicius09/herdr-mihi/actions/workflows/audit.yml)
+
 A collection of [herdr](https://herdr.dev) plugins I build and trust — self-authored, minimal,
 auditable, and provably safe. Pick what you use.
 
@@ -39,11 +42,13 @@ running anything.
 ## Layout
 
 ```
-plugins/<name>/   one self-contained plugin each (subtree-split-friendly)
-shared/           canonical shims (run.sh, install.sh) + templates, synced into each plugin
-scripts/          catalog generator, etc.
-justfile          task runner:  just sync-shared | check-sync | new-plugin | ci | catalog
-TESTING.md        dev loop + the four test tiers
+plugins/<name>/     one self-contained plugin each (subtree-split-friendly)
+shared/             canonical shims (run.sh, install.sh) + templates, synced into each plugin
+scripts/            ci.sh (the CI script), catalog + release generators
+.github/workflows/  ci (lint+test), audit (licenses+advisories), release (prebuilt binaries)
+deny.toml           cargo-deny policy: tight license allow-list, crates.io-only, no git deps
+justfile            just sync-shared | check-sync | ci | audit | new-plugin | catalog | release
+TESTING.md          dev loop + the four test tiers
 ```
 
 ## Develop

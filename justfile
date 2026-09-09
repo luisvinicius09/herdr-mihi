@@ -53,15 +53,18 @@ catalog:
 release name *flags:
     bash scripts/release.sh {{name}} {{flags}}
 
-# Everything CI runs (no herdr needed): sync check + per-plugin lint/test + bash tests.
-ci: check-sync
+# Everything CI runs (no herdr needed): sync check + shell syntax + per-plugin lint/test.
+# Same script the GitHub workflow runs, so `just ci` == CI.
+ci:
+    bash scripts/ci.sh
+
+# Dependency trust gate: licenses + advisories + sources (needs cargo-deny + cargo-audit).
+audit:
     #!/usr/bin/env bash
     set -euo pipefail
     for p in plugins/*/; do
-      name=$(basename "$p")
-      echo "== $name =="
-      if [ -f "${p}Cargo.toml" ]; then ( cd "$p" && cargo fmt --check && cargo clippy -- -D warnings && cargo test ); fi
-      if [ -f "${p}go.mod" ];     then ( cd "$p" && test -z "$(gofmt -l .)" && go test ./... ); fi
-      for t in "${p}"tests/*-test.sh; do [ -f "$t" ] && bash "$t"; done
+      [ -f "${p}Cargo.toml" ] || continue
+      echo "== $(basename "$p") =="
+      ( cd "$p" && cargo deny check --config "$PWD/../../deny.toml" )
+      ( cd "$p" && cargo audit --deny warnings )
     done
-    echo "ci ok"

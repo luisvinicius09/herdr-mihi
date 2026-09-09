@@ -1,0 +1,73 @@
+name: release
+
+# Fires when scripts/release.sh pushes an immutable `<name>-v<version>` tag.
+# That tag's root tree IS the plugin dir, so a checkout gives a self-contained crate.
+# For Rust plugins we publish verified prebuilt binaries; install.sh downloads + checksums
+# them, and falls back to building from source if they're absent. Bash plugins do nothing.
+on:
+  push:
+    tags: ['*-v*']
+
+permissions:
+  contents: write # create the release and upload assets
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    outputs:
+      is_rust: ${{ steps.meta.outputs.is_rust }}
+      name: ${{ steps.meta.outputs.name }}
+      version: ${{ steps.meta.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4 # tag tree root == plugin dir
+      - id: meta
+        run: |
+          name=$(sed -n 's/^name *= *"\(.*\)"/\1/p' herdr-plugin.toml | head -1)
+          version=$(sed -n 's/^version *= *"\(.*\)"/\1/p' herdr-plugin.toml | head -1)
+          if [ -f Cargo.toml ]; then is_rust=true; else is_rust=false; fi
+          { echo "name=$name"; echo "version=$version"; echo "is_rust=$is_rust"; } >> "$GITHUB_OUTPUT"
+          echo "plugin=$name v$version  is_rust=$is_rust"
+      - name: Create the release (Rust plugins only)
+        if: steps.meta.outputs.is_rust == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="$GITHUB_REF_NAME"
+          gh release view "$tag" >/dev/null 2>&1 && { echo "release $tag exists"; exit 0; }
+          gh release create "$tag" --verify-tag \
+            --title "${{ steps.meta.outputs.name }} v${{ steps.meta.outputs.version }}" \
+            --notes "Prebuilt, checksummed binaries for \`herdr plugin install luisvinicius09/herdr-mihi --ref ${{ steps.meta.outputs.name }}-latest\`. Each asset ships a matching \`.sha256\`; the installer verifies it and otherwise builds from source."
+
+  build:
+    needs: create-release
+    if: needs.create-release.outputs.is_rust == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: macos-14,         target: aarch64-apple-darwin,       asset_os: darwin, asset_arch: arm64 }
+          - { os: macos-13,         target: x86_64-apple-darwin,        asset_os: darwin, asset_arch: amd64 }
+          - { os: ubuntu-24.04,     target: x86_64-unknown-linux-musl,  asset_os: linux,  asset_arch: amd64 }
+          - { os: ubuntu-24.04-arm, target: aarch64-unknown-linux-musl, asset_os: linux,  asset_arch: arm64 }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: musl toolchain (linux, static builds)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y musl-tools
+      - name: Add target
+        run: rustup target add ${{ matrix.target }}
+      - name: Build (locked, release)
+        run: cargo build --locked --release --target ${{ matrix.target }}
+      - name: Package + checksum
+        run: |
+          name="${{ needs.create-release.outputs.name }}"
+          asset="${name}-${{ matrix.asset_os }}-${{ matrix.asset_arch }}"
+          cp "target/${{ matrix.target }}/release/${name}" "$asset"
+          strip "$asset" || true
+          shasum -a 256 "$asset" > "$asset.sha256"
+          echo "ASSET=$asset" >> "$GITHUB_ENV"
+      - name: Upload to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$GITHUB_REF_NAME" "$ASSET" "$ASSET.sha256" --clobber

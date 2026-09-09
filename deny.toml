@@ -1,0 +1,24 @@
+# cargo-deny — the dependency trust gate (run by .github/workflows/audit.yml, and
+# `just audit` locally). Tight by design: the allow-list is exactly the licenses present
+# in the audited tree, only crates.io is a permitted source, and git/wildcard deps are
+# banned. A new or unknown license/source fails CI so it gets a deliberate review.
+
+[advisories]
+version = 2      # RustSec: known vulnerabilities + unsound crates fail
+yanked = "deny"  # a yanked dependency is a supply-chain signal, not a warning
+
+[licenses]
+version = 2
+confidence-threshold = 0.9
+# Ground-truth from `cargo metadata` over both crates; every SPDX expression in the
+# tree is satisfied by these four. Add here only after reviewing a new dependency.
+allow = ["MIT", "Apache-2.0", "Unicode-3.0", "Zlib"]
+
+[bans]
+multiple-versions = "warn" # duplicate transitive versions: surface, don't fail
+wildcards = "deny"         # no `*` version requirements
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"       # no git dependencies — crates.io only
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
