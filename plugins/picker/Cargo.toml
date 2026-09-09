@@ -1,0 +1,20 @@
+[package]
+name = "picker"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "Browse and install the herdr-mihi collection — shows the exact commands first."
+
+[[bin]]
+name = "picker"
+path = "src/main.rs"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+ratatui = "0.29"
+tui-big-text = "0.7"
+
+[profile.release]
+lto = true
+strip = true

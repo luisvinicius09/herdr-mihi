@@ -1,0 +1,21 @@
+id = "herdr-mihi.picker"
+name = "picker"
+version = "0.1.0"
+min_herdr_version = "0.8.0"
+description = "Browse and install the herdr-mihi collection — shows the exact commands first."
+platforms = ["macos", "linux"]
+
+[[build]]
+command = ["bash", "herdr/install.sh"]
+
+# Action opens the picker pane; the pane runs the TUI.
+[[actions]]
+id = "open"
+title = "herdr-mihi: pick plugins"
+command = ["sh", "-c", "exec bash \"$HERDR_PLUGIN_ROOT/herdr/run.sh\" open"]
+
+[[panes]]
+id = "picker"
+title = "herdr-mihi"
+placement = "popup"
+command = ["sh", "-c", "exec bash \"$HERDR_PLUGIN_ROOT/herdr/run.sh\" pane"]
