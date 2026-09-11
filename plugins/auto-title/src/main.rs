@@ -4,10 +4,9 @@
 //! No subprocess, no network, no LLM. macOS + Linux.
 mod config;
 mod resolver;
-mod sanitize;
-mod snapshot;
-mod socket;
+mod shared; // canonical modules synced from shared/rust/ (see just sync-shared)
 
+use crate::shared::{snapshot, socket};
 use std::collections::{HashMap, HashSet};
 use std::io::Write as _;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};

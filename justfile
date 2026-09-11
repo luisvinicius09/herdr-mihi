@@ -17,6 +17,11 @@ sync-shared:
       if grep -q 'herdr/install.sh' "${p}herdr-plugin.toml" 2>/dev/null; then
         cp shared/install.sh "${p}herdr/install.sh"
       fi
+      # canonical Rust modules -> src/shared/ for any plugin whose src declares `mod shared`
+      if [ -d shared/rust ] && grep -rlq 'mod shared' "${p}src" 2>/dev/null; then
+        mkdir -p "${p}src/shared"
+        cp shared/rust/*.rs "${p}src/shared/"
+      fi
       n=$((n+1))
     done
     echo "synced shared/ into $n plugin(s)"
@@ -27,10 +32,15 @@ check-sync:
     set -euo pipefail
     fail=0
     for p in plugins/*/; do
-      [ -f "${p}herdr/run.sh" ] || continue
-      diff -q shared/run.sh "${p}herdr/run.sh" >/dev/null || { echo "DRIFT: ${p}herdr/run.sh"; fail=1; }
+      [ -f "${p}herdr/run.sh" ] && { diff -q shared/run.sh "${p}herdr/run.sh" >/dev/null || { echo "DRIFT: ${p}herdr/run.sh"; fail=1; }; }
+      [ -f "${p}herdr/install.sh" ] && { diff -q shared/install.sh "${p}herdr/install.sh" >/dev/null || { echo "DRIFT: ${p}herdr/install.sh"; fail=1; }; }
+      if [ -d "${p}src/shared" ]; then
+        for f in shared/rust/*.rs; do
+          diff -q "$f" "${p}src/shared/$(basename "$f")" >/dev/null 2>&1 || { echo "DRIFT: ${p}src/shared/$(basename "$f")"; fail=1; }
+        done
+      fi
     done
-    [ "$fail" = 0 ] && echo "shared shims in sync" || exit 1
+    [ "$fail" = 0 ] && echo "shared shims + modules in sync" || exit 1
 
 # Scaffold a new plugin:  just new-plugin <name>
 new-plugin name:

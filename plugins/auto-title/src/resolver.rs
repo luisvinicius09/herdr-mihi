@@ -5,8 +5,8 @@
 //! The project is dropped when it's merely the workspace name (herdr already shows the workspace
 //! above the tabs). `Shell` if nothing meaningful. No git branch / transcript / LLM in v1.
 use crate::config::Config;
-use crate::sanitize;
-use crate::snapshot::{PaneInfo, TabInfo};
+use crate::shared::sanitize;
+use crate::shared::snapshot::{PaneInfo, TabInfo};
 
 pub fn resolve(
     _tab: &TabInfo,

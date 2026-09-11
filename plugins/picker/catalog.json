@@ -3,6 +3,8 @@
   "plugins": [
     { "id": "herdr-mihi.auto-title", "name": "auto-title", "version": "0.1.0", "latest_ref": "auto-title-latest", "latest_commit": null, "description": "Tab titles that follow the work in each tab — deterministic, no network, no LLM." }
     ,
+    { "id": "herdr-mihi.dashboard", "name": "dashboard", "version": "0.1.0", "latest_ref": "dashboard-latest", "latest_commit": null, "description": "Non-disruptive agent-status dashboard — toasts on blocked/done, a popup to survey + jump." }
+    ,
     { "id": "herdr-mihi.lazygit", "name": "lazygit", "version": "0.1.0", "latest_ref": "lazygit-latest", "latest_commit": null, "description": "A git popup running your own lazygit, scoped to the current worktree." }
     ,
     { "id": "herdr-mihi.picker", "name": "picker", "version": "0.1.0", "latest_ref": "picker-latest", "latest_commit": null, "description": "Browse and install the herdr-mihi collection — shows the exact commands first." }

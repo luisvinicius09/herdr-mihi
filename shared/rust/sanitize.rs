@@ -1,5 +1,7 @@
+#![allow(dead_code)] // shared module: not every consumer uses every helper
 //! Treat every terminal/agent-derived string as hostile: strip ANSI/OSC escapes, control and
 //! bidi/zero-width format chars, collapse whitespace, and truncate by terminal COLUMN width.
+//! Canonical: `shared/rust/sanitize.rs` — synced into each plugin, CI drift-checked.
 use unicode_width::UnicodeWidthChar;
 
 /// Strip escapes + control/format chars and collapse whitespace to single spaces.

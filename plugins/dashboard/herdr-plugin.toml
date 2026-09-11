@@ -1,0 +1,31 @@
+id = "herdr-mihi.dashboard"
+name = "dashboard"
+version = "0.1.0"
+min_herdr_version = "0.8.0"
+description = "Non-disruptive agent-status dashboard — toasts on blocked/done, a popup to survey + jump."
+platforms = ["macos", "linux"]
+
+[[build]]
+command = ["bash", "herdr/install.sh"]
+
+# Watcher daemon: herdr starts it once; it polls session.snapshot and toasts on blocked/done.
+[[startup]]
+command = ["sh", "-c", "exec bash \"$HERDR_PLUGIN_ROOT/herdr/run.sh\" watch"]
+
+# Open the dashboard popup (survey all agents; enter to jump).
+[[actions]]
+id = "open"
+title = "Agent dashboard"
+command = ["sh", "-c", "exec bash \"$HERDR_PLUGIN_ROOT/herdr/run.sh\" open"]
+
+# Opt-in: add the open keybind to your herdr config.toml.
+[[actions]]
+id = "setup"
+title = "Agent dashboard: add keybind"
+command = ["sh", "-c", "exec bash \"$HERDR_PLUGIN_ROOT/herdr/run.sh\" setup"]
+
+[[panes]]
+id = "dashboard"
+title = "dashboard"
+placement = "popup"
+command = ["sh", "-c", "exec bash \"$HERDR_PLUGIN_ROOT/herdr/run.sh\" pane"]
