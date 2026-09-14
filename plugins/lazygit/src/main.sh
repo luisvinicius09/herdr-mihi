@@ -14,18 +14,31 @@ HERDR="${HERDR_BIN_PATH:-herdr}"
 envf="${HERDR_PLUGIN_CONFIG_DIR:-}/.env"
 [ -n "${HERDR_PLUGIN_CONFIG_DIR:-}" ] && [ -f "$envf" ] && { set -a; . "$envf"; set +a; }
 LAZYGIT_BIN="${LAZYGIT_BIN:-lazygit}"
+# How lazygit opens (the setting `open` honors):
+#   popup = floating overlay over the workspace (doesn't rearrange your split; session-modal)
+#   side  = a split pane beside your work (workspace-tied, persistent)
+PLACEMENT="${PLACEMENT:-popup}"
 POPUP_WIDTH="${POPUP_WIDTH:-80%}"
 POPUP_HEIGHT="${POPUP_HEIGHT:-80%}"
 
-cmd_open() {
-  local cwd root
+# _open <popup|side>: open lazygit via the matching declared pane, rooted at the current worktree.
+_open() {
+  local mode="$1" cwd root entry placement
   cwd="$(resolve_cwd "${HERDR_PLUGIN_CONTEXT_JSON:-}")"
   root="$(worktree_root "$cwd")"
-  "$HERDR" plugin pane open --plugin herdr-mihi.lazygit --entrypoint lazygit \
-    --placement popup --width "$POPUP_WIDTH" --height "$POPUP_HEIGHT" \
-    --cwd "$root" --focus >/dev/null 2>&1 \
-    || { echo "herdr-mihi.lazygit: failed to open pane" >&2; exit 1; }
+  case "$mode" in
+    side|split) entry="lazygit-side"; placement="split" ;;
+    *)          entry="lazygit";      placement="popup" ;;
+  esac
+  local args=(plugin pane open --plugin herdr-mihi.lazygit --entrypoint "$entry"
+    --placement "$placement" --cwd "$root" --focus)
+  [ "$placement" = "popup" ] && args+=(--width "$POPUP_WIDTH" --height "$POPUP_HEIGHT")
+  "$HERDR" "${args[@]}" >/dev/null 2>&1 \
+    || { echo "herdr-mihi.lazygit: failed to open lazygit ($placement)" >&2; exit 1; }
 }
+
+cmd_open() { _open "$PLACEMENT"; }   # honors the PLACEMENT setting (default popup)
+cmd_open_side() { _open side; }      # always the side pane
 
 cmd_pane() {
   # runs inside the popup; herdr set cwd to the target worktree.
@@ -68,7 +81,8 @@ cmd_setup() {
 
 case "${1:-}" in
   open) cmd_open ;;
+  open-side) cmd_open_side ;;
   pane) cmd_pane ;;
   setup) cmd_setup ;;
-  *) echo "usage: run.sh {open|pane|setup}" >&2; exit 2 ;;
+  *) echo "usage: run.sh {open|open-side|pane|setup}" >&2; exit 2 ;;
 esac

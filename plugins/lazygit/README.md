@@ -2,8 +2,8 @@
 
 **Platforms: macOS · Linux**
 
-A git popup running **your own** lazygit, scoped to the current git worktree. Thin, pure-bash glue —
-lazygit owns all the git UI.
+A git **popup** running **your own** lazygit, rooted at the current git worktree. Thin, pure-bash
+glue — lazygit owns all the git UI.
 
 ## Install
 ```sh
@@ -33,10 +33,15 @@ command = "herdr plugin action invoke herdr-mihi.lazygit.open"
 
 ## Behavior
 - `open` resolves the current worktree (focused pane's cwd → workspace cwd → `$HOME`, then the git top-level)
-  and opens a lazygit **popup** rooted there. Quit lazygit (`q`) to close it.
+  and opens a lazygit **popup** rooted there — a floating overlay that covers the workspace **without
+  rearranging your split**. Quit lazygit (`q`) to close it. Because it's rooted at the current worktree,
+  opening it in workspace A acts on A's repo, in B on B's.
 - If lazygit fails to start (or is missing), the popup **stays open showing the error** instead of vanishing.
-- v1 opens a fresh popup each time; it does not yet *summon* an already-open one. (herdr's `pane open` CLI returns
-  no pane id, so de-duplicating needs socket pane-querying — a planned enhancement, shared with auto-title's engine.)
+- **Popup or side pane — your choice.** Set `PLACEMENT=popup` (default) or `PLACEMENT=side` in your
+  `.env`, or invoke/bind the **`open-side`** action to get the side pane on demand:
+  - `popup` — floating overlay; covers the workspace, doesn't rearrange your split; **session-modal**
+    (one at a time, not persistent — a herdr limitation).
+  - `side` — a **split** pane beside your work; workspace-tied and persists when you switch away.
 
 ## Capability declaration (trust)
 - **Spawns:** `lazygit` (yours), `git` (`rev-parse` for the worktree root), `herdr` CLI (`plugin pane open`).
@@ -49,4 +54,5 @@ command = "herdr plugin action invoke herdr-mihi.lazygit.open"
 `lazygit`, `git`, `bash`, `herdr ≥ 0.8`. macOS + Linux.
 
 ## Config (`.env`)
-See `.env.example`: `LAZYGIT_BIN`, `POPUP_WIDTH`, `POPUP_HEIGHT`.
+See `.env.example`: `LAZYGIT_BIN`, `PLACEMENT` (`popup` or `side`), and `POPUP_WIDTH`/`POPUP_HEIGHT`
+(popup only).

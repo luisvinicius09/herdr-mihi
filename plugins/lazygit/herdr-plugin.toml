@@ -7,10 +7,17 @@ platforms = ["macos", "linux"]
 
 # Pure bash — no build step, no bundled binaries.
 
+# Open lazygit the way PLACEMENT says (popup by default).
 [[actions]]
 id = "open"
 title = "Lazygit"
 command = ["sh", "-c", "exec bash \"$HERDR_PLUGIN_ROOT/herdr/run.sh\" open"]
+
+# Open lazygit in a side pane (split), regardless of PLACEMENT.
+[[actions]]
+id = "open-side"
+title = "Lazygit: side pane"
+command = ["sh", "-c", "exec bash \"$HERDR_PLUGIN_ROOT/herdr/run.sh\" open-side"]
 
 # Opt-in: add the open keybind to your herdr config.toml.
 [[actions]]
@@ -18,8 +25,16 @@ id = "setup"
 title = "Lazygit: add keybind"
 command = ["sh", "-c", "exec bash \"$HERDR_PLUGIN_ROOT/herdr/run.sh\" setup"]
 
+# The popup pane (floating overlay).
 [[panes]]
 id = "lazygit"
-title = "Git"
+title = "lazygit"
 placement = "popup"
+command = ["sh", "-c", "exec bash \"$HERDR_PLUGIN_ROOT/herdr/run.sh\" pane"]
+
+# The side pane (split beside your work).
+[[panes]]
+id = "lazygit-side"
+title = "lazygit"
+placement = "split"
 command = ["sh", "-c", "exec bash \"$HERDR_PLUGIN_ROOT/herdr/run.sh\" pane"]
