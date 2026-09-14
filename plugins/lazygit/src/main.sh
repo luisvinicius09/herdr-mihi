@@ -41,12 +41,31 @@ cmd_open() { _open "$PLACEMENT"; }   # honors the PLACEMENT setting (default pop
 cmd_open_side() { _open side; }      # always the side pane
 
 cmd_pane() {
-  # runs inside the popup; herdr set cwd to the target worktree.
+  # runs inside the pane; herdr set cwd to the target worktree.
   if ! command -v "$LAZYGIT_BIN" >/dev/null 2>&1 && [ ! -x "$LAZYGIT_BIN" ]; then
     echo "herdr-mihi.lazygit: '$LAZYGIT_BIN' not found on PATH." >&2
     echo "  install it (e.g. 'brew install lazygit') or set LAZYGIT_BIN in your .env." >&2
     read -rp "press enter to close… " _ || true
     exit 0
+  fi
+  # Opt-in (ESC_QUIT=on): make Esc quit lazygit at the top level by LAYERING a read-only overlay
+  # onto YOUR lazygit config via LG_CONFIG_FILE — your config file is never written.
+  if [ "${ESC_QUIT:-off}" = "on" ]; then
+    local overlay="${HERDR_PLUGIN_ROOT:-$(cd "$here/.." && pwd)}/esc-quit.yml"
+    if [ -f "$overlay" ]; then
+      local base="${LG_CONFIG_FILE:-}"
+      if [ -z "$base" ]; then
+        # ask lazygit itself where its config lives (robust; never guess the platform path)
+        local cfgdir
+        cfgdir="$("$LAZYGIT_BIN" --print-config-dir 2>/dev/null || true)"
+        [ -n "$cfgdir" ] && [ -f "$cfgdir/config.yml" ] && base="$cfgdir/config.yml"
+      fi
+      # Only layer the overlay if we can preserve YOUR config too — never load overlay alone
+      # (that would drop your keybinds). If we can't find your config, leave lazygit untouched.
+      if [ -n "$base" ]; then
+        export LG_CONFIG_FILE="$base,$overlay"
+      fi
+    fi
   fi
   "$LAZYGIT_BIN" || {
     rc=$?

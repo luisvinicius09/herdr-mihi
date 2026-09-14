@@ -1,0 +1,4 @@
+# herdr-mihi.lazygit — optional overlay (opt-in via ESC_QUIT=on).
+# Layered ON TOP of your own lazygit config via LG_CONFIG_FILE (read-only; your config is never
+# written). Makes Escape quit lazygit at the top level, like `q`; Esc still cancels inside submenus.
+quitOnTopLevelReturn: true
